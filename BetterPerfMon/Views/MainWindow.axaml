@@ -1,0 +1,44 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:BetterPerfMon.ViewModels"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Avalonia;assembly=LiveChartsCore.SkiaSharpView.Avalonia"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="BetterPerfMon.Views.MainWindow"
+        x:DataType="vm:MetricsViewModel"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="BetterPerfMon"
+        Width="2000"
+        Height="1500">
+
+    <Design.DataContext>
+        <vm:MetricsViewModel/>
+    </Design.DataContext>
+    
+    <Window.DataContext>
+        <vm:MetricsViewModel/>
+    </Window.DataContext>
+    
+    <Grid Margin="20,20,20, 20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
+            <Button Command="{Binding OnMetricsStartClicked}" Content="Start Collecting" Margin="0,0,10,0" />
+            <Button Command="{Binding OnMetricsStopClicked}" Content="Stop Collecting" />
+        </StackPanel>
+        <lvc:CartesianChart Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Series="{Binding CpuSeries}" Title="{Binding CpuTitle}" XAxes="{Binding XAxis}" YAxes="{Binding YAxis}" />
+        <lvc:CartesianChart Grid.Row="2" Grid.Column="0" Series="{Binding MemSeries}" Title="{Binding MemTitle}" XAxes="{Binding XAxis}" YAxes="{Binding YAxis}" />
+        <lvc:CartesianChart Grid.Row="2" Grid.Column="1" Series="{Binding MemGbSeries}" Title="{Binding MemGbTitle}" XAxes="{Binding XAxis}" YAxes="{Binding YAxis}" />
+        <lvc:CartesianChart Grid.Row="3" Grid.Column="0" Series="{Binding GpuSeries}" Title="{Binding GpuTitle}" XAxes="{Binding XAxis}" YAxes="{Binding YAxis}" />
+        <lvc:CartesianChart Grid.Row="3" Grid.Column="1" Series="{Binding VramGbSeries}" Title="{Binding VramGbTitle}" XAxes="{Binding XAxis}" YAxes="{Binding YAxis}" />
+    </Grid>
+</Window>

@@ -9,8 +9,8 @@
         x:DataType="vm:MetricsViewModel"
         Icon="/Assets/avalonia-logo.ico"
         Title="BetterPerfMon"
-        Width="2000"
-        Height="1500">
+        Width="1200"
+        Height="500">
 
     <Design.DataContext>
         <vm:MetricsViewModel/>

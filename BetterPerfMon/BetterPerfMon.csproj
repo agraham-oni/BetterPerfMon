@@ -24,5 +24,8 @@
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm" Version="8.2.1"/>
         <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-rc4.5" />
+        <PackageReference Include="ManagedCuda-Nvml.NETStandard" Version="9.1.300" />
+        <PackageReference Include="System.Diagnostics.PerformanceCounter" Version="9.0.0" />
+        <PackageReference Include="System.Management" Version="9.0.0" />
     </ItemGroup>
 </Project>

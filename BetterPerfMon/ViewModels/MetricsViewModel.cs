@@ -1,5 +1,6 @@
 using System;
 using System.Collections.ObjectModel;
+using System.Runtime.InteropServices;
 using BetterPerfMon.Models;
 using BetterPerfMon.Services;
 using LiveChartsCore;
@@ -76,7 +77,7 @@ public class MetricsViewModel
             Text = title,
             TextSize = 10,
             Padding = new LiveChartsCore.Drawing.Padding(15),
-            Paint = new SolidColorPaint(SKColors.White)
+            Paint = new SolidColorPaint(_GetTextColor())
         };
     }
 
@@ -96,8 +97,22 @@ public class MetricsViewModel
         [
             new()
             {
-                LabelsPaint = new SolidColorPaint(SKColors.White)
+                LabelsPaint = new SolidColorPaint(_GetTextColor())
             }
         ];
+    }
+
+    private static SKColor _GetTextColor()
+    {
+        if (_IsMacOS())
+        {
+            return SKColors.White;
+        }
+        return SKColors.Black;
+    }
+
+    private static bool _IsMacOS()
+    {
+        return RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
     }
 }

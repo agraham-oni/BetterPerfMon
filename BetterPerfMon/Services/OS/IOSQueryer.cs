@@ -7,4 +7,5 @@ public interface IOsQueryer
     float GetCpuUtilizedTick();
     float GetMemoryUtilizedTick();
     float GetGpuUtilizedTick();
+    float GetVramUtilizedTick();
 }

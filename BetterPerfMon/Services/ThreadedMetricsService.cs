@@ -37,7 +37,9 @@ public class ThreadedMetricsService : IMetricsService
                 Timestamp = DateTime.Now,
                 CpuPercent = osQueryer.GetCpuUtilizedTick(),
                 MemoryPercent = ((totalMemory - memGbAvailable) / totalMemory) * 100,
-                MemoryGb = totalMemory - memGbAvailable
+                MemoryGb = totalMemory - memGbAvailable,
+                GpuPercent = osQueryer.GetGpuUtilizedTick(),
+                VramGb = osQueryer.GetVramUtilizedTick()
             };
             messageCallback(metrics);
             Thread.Sleep(1000);

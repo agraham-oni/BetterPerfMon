@@ -1,15 +1,15 @@
 using System;
-using System.Diagnostics;
-using System.Management;
+using System.Runtime.InteropServices;
 using System.Threading;
 using BetterPerfMon.Models;
+using BetterPerfMon.Services.OS;
 
 namespace BetterPerfMon.Services;
 
 public class ThreadedMetricsService : IMetricsService
 {
     private Thread? _collectionThread;
-    private readonly ManualResetEventSlim _stopCollecting = new ManualResetEventSlim(false);
+    private readonly ManualResetEventSlim _stopCollecting = new(false);
 
     public void StartCollecting(Action<MetricsSet> messageCallback)
     {
@@ -26,19 +26,16 @@ public class ThreadedMetricsService : IMetricsService
 
     private void _CollectMetrics(Action<MetricsSet> messageCallback)
     {
-        ulong totalMemory = _GetTotalPhysicalMemoryMb();
-        
-        // Get total time CPU spends executing threads of a process.
-        PerformanceCounter cpuCounter = new PerformanceCounter("Processor", "% Processor Time", "_Total");
-        PerformanceCounter ramCounter = new PerformanceCounter("Memory", "Available Bytes");
+        IOsQueryer osQueryer = _GetQueryer();
+        ulong totalMemory = osQueryer.GetTotalPhysicalMemoryGb();
         
         while (!_stopCollecting.IsSet)
         {
-            var memGbAvailable = ramCounter.NextValue() / (1024 * 1024 * 1024);
+            var memGbAvailable = osQueryer.GetMemoryUtilizedTick();
             var metrics = new MetricsSet
             {
                 Timestamp = DateTime.Now,
-                CpuPercent = cpuCounter.NextValue(),
+                CpuPercent = osQueryer.GetCpuUtilizedTick(),
                 MemoryPercent = ((totalMemory - memGbAvailable) / totalMemory) * 100,
                 MemoryGb = totalMemory - memGbAvailable
             };
@@ -47,17 +44,12 @@ public class ThreadedMetricsService : IMetricsService
         }
     }
 
-    private ulong _GetTotalPhysicalMemoryMb()
+    private IOsQueryer _GetQueryer()
     {
-        ObjectQuery query = new ObjectQuery("SELECT TotalPhysicalMemory FROM Win32_ComputerSystem");
-        ManagementObjectSearcher searcher = new ManagementObjectSearcher(query);
-
-        foreach (ManagementObject obj in searcher.Get())
+        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
         {
-            ulong totalPhysicalMemory = (ulong)obj["TotalPhysicalMemory"];
-            return totalPhysicalMemory / (1024 * 1024 * 1024);
+            throw new PlatformNotSupportedException();
         }
-
-        return 0;
+        return new WindowsQueryer();
     }
 }

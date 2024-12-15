@@ -33,7 +33,8 @@
         </Grid.ColumnDefinitions>
         <StackPanel Grid.Row="0" Grid.Column="0" Orientation="Horizontal">
             <Button Command="{Binding OnMetricsStartClicked}" Content="Start Collecting" Margin="0,0,10,0" />
-            <Button Command="{Binding OnMetricsStopClicked}" Content="Stop Collecting" />
+            <Button Command="{Binding OnMetricsStopClicked}" Content="Stop Collecting" Margin="0,0,10,0" />
+            <Button Command="{Binding ExportStats}" Content="Export Status" />
         </StackPanel>
         <lvc:CartesianChart Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" Series="{Binding CpuSeries}" Title="{Binding CpuTitle}" XAxes="{Binding XAxis}" YAxes="{Binding YAxis}" />
         <lvc:CartesianChart Grid.Row="2" Grid.Column="0" Series="{Binding MemSeries}" Title="{Binding MemTitle}" XAxes="{Binding XAxis}" YAxes="{Binding YAxis}" />

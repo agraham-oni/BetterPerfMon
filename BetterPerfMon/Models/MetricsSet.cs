@@ -11,7 +11,7 @@ public struct MetricsSet
     public float MemoryGb { get; set; }
     public float VramPercent { get; set; }
     public float VramGb { get; set; }
-
+    
     public override string ToString()
     {
         string result = "";

@@ -40,17 +40,25 @@ public class ThreadedMetricsService : IMetricsService
         
         while (!_stopCollecting.IsSet)
         {
-            var memGbAvailable = osQueryer.GetMemoryUtilizedTick();
-            var metrics = new MetricsSet
+            try
             {
-                Timestamp = DateTime.Now,
-                CpuPercent = osQueryer.GetCpuUtilizedTick(),
-                MemoryPercent = ((totalMemory - memGbAvailable) / totalMemory) * 100,
-                MemoryGb = totalMemory - memGbAvailable,
-                GpuPercent = osQueryer.GetGpuUtilizedTick(),
-                VramGb = osQueryer.GetVramUtilizedTick()
-            };
-            messageCallback(metrics);
+                var memGbAvailable = osQueryer.GetMemoryUtilizedTick();
+                var metrics = new MetricsSet
+                {
+                    Timestamp = DateTime.Now,
+                    CpuPercent = osQueryer.GetCpuUtilizedTick(),
+                    MemoryPercent = ((totalMemory - memGbAvailable) / totalMemory) * 100,
+                    MemoryGb = totalMemory - memGbAvailable,
+                    GpuPercent = osQueryer.GetGpuUtilizedTick(),
+                    VramGb = osQueryer.GetVramUtilizedTick()
+                };
+                messageCallback(metrics);
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine("Got exception gathering metrics:");
+                Console.WriteLine(e.Message);
+            }
             Thread.Sleep(1000);
         }
     }

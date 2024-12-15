@@ -1,0 +1,20 @@
+﻿name: Build Application
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '9.x'
+      - name: Install dependencies and build
+        run: dotnet build -c Release -r win-x64

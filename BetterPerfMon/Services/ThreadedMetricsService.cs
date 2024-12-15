@@ -1,8 +1,8 @@
 using System;
-using System.Runtime.InteropServices;
 using System.Threading;
 using BetterPerfMon.Models;
 using BetterPerfMon.Services.OS;
+
 
 namespace BetterPerfMon.Services;
 
@@ -26,7 +26,16 @@ public class ThreadedMetricsService : IMetricsService
 
     private void _CollectMetrics(Action<MetricsSet> messageCallback)
     {
-        IOsQueryer osQueryer = _GetQueryer();
+        IOsQueryer osQueryer;
+
+#if WINDOWS
+        osQueryer = new WindowsQueryer();
+#elif OSX
+        osQueryer = new MacQueryer();
+#else
+        throw new PlatformNotSupportedException("This platform is not supported.");
+#endif
+        
         ulong totalMemory = osQueryer.GetTotalPhysicalMemoryGb();
         
         while (!_stopCollecting.IsSet)
@@ -44,14 +53,5 @@ public class ThreadedMetricsService : IMetricsService
             messageCallback(metrics);
             Thread.Sleep(1000);
         }
-    }
-
-    private IOsQueryer _GetQueryer()
-    {
-        if (!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
-        {
-            throw new PlatformNotSupportedException();
-        }
-        return new WindowsQueryer();
     }
 }

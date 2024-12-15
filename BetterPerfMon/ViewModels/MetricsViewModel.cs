@@ -1,5 +1,7 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Runtime.InteropServices;
 using BetterPerfMon.Models;
 using BetterPerfMon.Services;
@@ -22,6 +24,9 @@ public class MetricsViewModel
     
     private ObservableCollection<float> _memGb = new();
     private ObservableCollection<float> _vramGb = new();
+
+    private DateTime _startTime;
+    private DateTime _endTime;
 
     public ObservableCollection<ISeries> CpuSeries { get; } = new();
     public ObservableCollection<ISeries> MemSeries { get; } = new();
@@ -53,11 +58,35 @@ public class MetricsViewModel
     public void OnMetricsStartClicked()
     {
         _metricsService.StartCollecting(_OnMetricsReceived);
+        _startTime = DateTime.Now;
     }
     
     public void OnMetricsStopClicked()
     {
         _metricsService.StopCollecting();
+        _endTime = DateTime.Now;
+    }
+
+    public void ExportStats()
+    {
+        if (_cpuPercents.Count == 0)
+        {
+            throw new InvalidOperationException("No metrics available to export.");
+        }
+        var metricStats = new MetricStats()
+        {
+            MedianCpuPercent = _GetMedium(_cpuPercents.ToList()),
+            CpuPeakPercent = _GetPercentile(_cpuPercents.ToList(), 99),
+            MedianGpuPercent = _GetMedium(_gpuPercents.ToList()),
+            GpuPeakPercent = _GetPercentile(_gpuPercents.ToList(), 99),
+            MedianRamGb = _GetMedium(_memGb.ToList()),
+            RamPeakGb = _GetPercentile(_memGb.ToList(), 99),
+            MedianVramGb = _GetMedium(_vramGb.ToList()),
+            PeakVramGb = _GetPercentile(_vramGb.ToList(), 99),
+            DurationMinutes = (float)(_endTime - _startTime).TotalMinutes,
+            
+        };
+        metricStats.Export();
     }
 
     private void _OnMetricsReceived(MetricsSet metrics)
@@ -114,5 +143,30 @@ public class MetricsViewModel
     private static bool _IsMacOS()
     {
         return RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
+    }
+    
+    private float _GetPercentile(List<float> values, int percentile)
+    {
+        values.Sort();
+        int n = values.Count;
+        float index = percentile / 100f * (n - 1);
+        int lower = (int)Math.Floor(index);
+        int upper = lower + 1 < n ? lower + 1 : lower;
+        float weight = index - lower;
+        return values[lower] * (1 - weight) + values[upper] * weight;
+    }
+    
+    private float _GetMedium(List<float> numbers)
+    {
+        var sortedNumbers = numbers.OrderBy(n => n).ToList();
+        int count = sortedNumbers.Count;
+        if (count % 2 == 1)
+        {
+            return sortedNumbers[count / 2];
+        }
+        
+        float mid1 = sortedNumbers[(count / 2) - 1];
+        float mid2 = sortedNumbers[count / 2];
+        return (mid1 + mid2) / 2;
     }
 }

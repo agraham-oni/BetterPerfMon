@@ -6,7 +6,7 @@ on:
       - main
 
 jobs:
-  build-and-release:
+  build:
     runs-on: windows-latest
 
     steps:
@@ -17,4 +17,4 @@ jobs:
         with:
           dotnet-version: '9.x'
       - name: Install dependencies and build
-        run: dotnet build -c Release -r win-x64
+        run: dotnet build

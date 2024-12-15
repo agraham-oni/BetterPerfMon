@@ -106,7 +106,7 @@ public class MetricsViewModel
             Text = title,
             TextSize = 10,
             Padding = new LiveChartsCore.Drawing.Padding(15),
-            Paint = new SolidColorPaint(_GetTextColor())
+            Paint = new SolidColorPaint(SKColors.White)
         };
     }
 
@@ -116,7 +116,7 @@ public class MetricsViewModel
         {
             Values = values,
             Fill = null,
-            GeometrySize = 5
+            GeometrySize = 2
         };
     }
 
@@ -126,23 +126,9 @@ public class MetricsViewModel
         [
             new()
             {
-                LabelsPaint = new SolidColorPaint(_GetTextColor())
+                LabelsPaint = new SolidColorPaint(SKColors.White)
             }
         ];
-    }
-
-    private static SKColor _GetTextColor()
-    {
-        if (_IsMacOS())
-        {
-            return SKColors.White;
-        }
-        return SKColors.Black;
-    }
-
-    private static bool _IsMacOS()
-    {
-        return RuntimeInformation.IsOSPlatform(OSPlatform.OSX);
     }
     
     private float _GetPercentile(List<float> values, int percentile)

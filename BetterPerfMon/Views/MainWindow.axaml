@@ -10,7 +10,8 @@
         Icon="/Assets/avalonia-logo.ico"
         Title="BetterPerfMon"
         Width="1200"
-        Height="500">
+        Height="500"
+        Background="Black">
 
     <Design.DataContext>
         <vm:MetricsViewModel/>

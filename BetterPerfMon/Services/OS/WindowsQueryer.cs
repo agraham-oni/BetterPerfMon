@@ -8,7 +8,7 @@ namespace BetterPerfMon.Services.OS;
 public class WindowsQueryer : IOsQueryer
 {
     private const int _BYTES_IN_GB = 1024 * 1024 * 1024;
-    private PerformanceCounter _cpuCounter = new("Processor", "% Processor Time", "_Total");
+    private PerformanceCounter _cpuCounter = new("Processor Information", "% Processor Utility", "_Total");
     private PerformanceCounter _ramCounter = new("Memory", "Available Bytes");
     private bool _hasNvidiaGpu = _HasNvidiaGpu();
     private nvmlDevice _gpuDeviceHandle;
@@ -27,6 +27,7 @@ public class WindowsQueryer : IOsQueryer
             
             // Need to handle if there are multiple GPUs.
             NvmlNativeMethods.nvmlDeviceGetHandleByIndex(0, ref _gpuDeviceHandle);
+            Console.WriteLine($"Using {_gpuDeviceHandle.ToString()} as GPU.");
         }
     }
     
